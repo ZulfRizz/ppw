@@ -1,0 +1,49 @@
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.10.21/x64/lib/python3.10/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/opt/hostedtoolcache/Python/3.10.21/x64/lib/python3.10/site-packages/nbclient/client.py", line 1323, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/opt/hostedtoolcache/Python/3.10.21/x64/lib/python3.10/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+  File "/opt/hostedtoolcache/Python/3.10.21/x64/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/opt/hostedtoolcache/Python/3.10.21/x64/lib/python3.10/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/opt/hostedtoolcache/Python/3.10.21/x64/lib/python3.10/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/opt/hostedtoolcache/Python/3.10.21/x64/lib/python3.10/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+import pandas as pd
+
+df = pd.read_csv("dataset_berita_detik.csv")
+
+checks = pd.DataFrame({
+    "pemeriksaan": ["jumlah baris", "nilai kosong", "baris ganda",
+                    "URL ganda", "urutan id", "jumlah per label"],
+    "hasil": [len(df), df.isna().sum().sum(), df.duplicated().sum(),
+              df["url"].duplicated().sum(),
+              "lengkap 1-200" if list(df["id"]) == list(range(1, len(df) + 1))
+              else "tidak urut",
+              "; ".join(f"{k}: {v}"
+                        for k, v in df["label"].value_counts().items())],
+})
+checks
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+Cell [0;32mIn[1], line 1[0m
+[0;32m----> 1[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mpandas[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mpd[39;00m
+[1;32m      3[0m df [38;5;241m=[39m pd[38;5;241m.[39mread_csv([38;5;124m"[39m[38;5;124mdataset_berita_detik.csv[39m[38;5;124m"[39m)
+[1;32m      5[0m checks [38;5;241m=[39m pd[38;5;241m.[39mDataFrame({
+[1;32m      6[0m     [38;5;124m"[39m[38;5;124mpemeriksaan[39m[38;5;124m"[39m: [[38;5;124m"[39m[38;5;124mjumlah baris[39m[38;5;124m"[39m, [38;5;124m"[39m[38;5;124mnilai kosong[39m[38;5;124m"[39m, [38;5;124m"[39m[38;5;124mbaris ganda[39m[38;5;124m"[39m,
+[1;32m      7[0m                     [38;5;124m"[39m[38;5;124mURL ganda[39m[38;5;124m"[39m, [38;5;124m"[39m[38;5;124murutan id[39m[38;5;124m"[39m, [38;5;124m"[39m[38;5;124mjumlah per label[39m[38;5;124m"[39m],
+[0;32m   (...)[0m
+[1;32m     13[0m                         [38;5;28;01mfor[39;00m k, v [38;5;129;01min[39;00m df[[38;5;124m"[39m[38;5;124mlabel[39m[38;5;124m"[39m][38;5;241m.[39mvalue_counts()[38;5;241m.[39mitems())],
+[1;32m     14[0m })
+
+[0;31mModuleNotFoundError[0m: No module named 'pandas'
+

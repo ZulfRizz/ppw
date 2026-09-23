@@ -1,0 +1,1178 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Modeling Klasifikasi: Naive Bayes vs KNN &#8212; Pencarian dan Penambangan Web</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'modeling-klasifikasi';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.jpg" class="logo__image only-light" alt="Pencarian dan Penambangan Web - Home"/>
+    <script>document.write(`<img src="_static/logo.jpg" class="logo__image only-dark" alt="Pencarian dan Penambangan Web - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    About Me
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tugas_1.html">Crawling Artikel Detik.com</a></li>
+<li class="toctree-l1"><a class="reference internal" href="text-preprocessing.html">Text Preprocessing</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fmodeling-klasifikasi.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/modeling-klasifikasi.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Modeling Klasifikasi: Naive Bayes vs KNN</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mengapa-dua-algoritma-ini">Mengapa dua algoritma ini?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memuat-data-hasil-preprocessing">1. Memuat Data Hasil Preprocessing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#split-data-latih-dan-uji">2. Split Data Latih dan Uji</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-1-naive-bayes-multinomial">3. Model 1: Naive Bayes (Multinomial)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-2-k-nearest-neighbors-knn">4. Model 2: K-Nearest Neighbors (KNN)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perbandingan-model">5. Perbandingan Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kesimpulan">6. Kesimpulan</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="modeling-klasifikasi-naive-bayes-vs-knn">
+<h1>Modeling Klasifikasi: Naive Bayes vs KNN<a class="headerlink" href="#modeling-klasifikasi-naive-bayes-vs-knn" title="Link to this heading">#</a></h1>
+<p>Notebook ini melanjutkan <code class="docutils literal notranslate"><span class="pre">text-preprocessing.ipynb</span></code>. Pada notebook sebelumnya,
+200 artikel <a class="reference external" href="http://detik.com">detik.com</a> (100 sport, 100 finance) sudah melalui pembersihan
+teks, normalisasi slang, penghapusan stopword, stemming, hingga vektorisasi
+TF-IDF menghasilkan matriks 200 dokumen x 4.970 fitur. Hasil itu disimpan ke
+tiga berkas:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tfidf_sparse.npz</span></code> – matriks TF-IDF dalam format sparse</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tfidf_features.txt</span></code> – daftar nama fitur (kata) sesuai urutan kolom</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tfidf_docs.csv</span></code> – pasangan <code class="docutils literal notranslate"><span class="pre">id</span></code> dan <code class="docutils literal notranslate"><span class="pre">label</span></code> (sport/finance) tiap dokumen</p></li>
+</ul>
+<p>Ketiganya dimuat kembali di notebook ini. Tidak ada pengulangan tahap
+pembersihan teks, tokenisasi, atau vektorisasi – fokus notebook ini murni
+pada tahap <strong>modeling</strong>, yaitu melatih model klasifikasi yang dapat
+menebak kategori berita (sport atau finance) hanya dari representasi
+TF-IDF-nya.</p>
+<section id="mengapa-dua-algoritma-ini">
+<h2>Mengapa dua algoritma ini?<a class="headerlink" href="#mengapa-dua-algoritma-ini" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Algoritma</p></th>
+<th class="head"><p>Prinsip kerja</p></th>
+<th class="head"><p>Alasan dipilih</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Naive Bayes (Multinomial)</strong></p></td>
+<td><p>Menghitung peluang suatu dokumen masuk kelas tertentu berdasarkan frekuensi kemunculan tiap kata, dengan asumsi independensi antar kata (mengabaikan urutan/konteks)</p></td>
+<td><p>Dirancang khusus untuk fitur berupa hitungan/frekuensi non-negatif seperti TF-IDF; ringan secara komputasi dan menjadi baseline klasik untuk klasifikasi teks</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>K-Nearest Neighbors (KNN)</strong></p></td>
+<td><p>Mengklasifikasi dokumen baru berdasarkan mayoritas label dari k dokumen paling mirip di data latih</p></td>
+<td><p>Pendekatan berbasis kemiripan yang tidak mengasumsikan independensi antar fitur, sehingga menjadi pembanding yang berbeda filosofi dari Naive Bayes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Kedua model dilatih pada data yang identik (pembagian latih/uji yang sama)
+supaya perbandingan performa di akhir notebook ini adil, lalu model dengan
+skor lebih baik dipilih sebagai model akhir.</p>
+</section>
+<section id="memuat-data-hasil-preprocessing">
+<h2>1. Memuat Data Hasil Preprocessing<a class="headerlink" href="#memuat-data-hasil-preprocessing" title="Link to this heading">#</a></h2>
+<p>Sel di bawah membaca kembali ketiga berkas hasil preprocessing tanpa
+memodifikasi isinya. <code class="docutils literal notranslate"><span class="pre">X</span></code> adalah matriks fitur TF-IDF (sparse, agar hemat
+memori karena mayoritas selnya bernilai nol), sedangkan <code class="docutils literal notranslate"><span class="pre">y</span></code> adalah label
+kelas yang diambil dari kolom <code class="docutils literal notranslate"><span class="pre">label</span></code> pada <code class="docutils literal notranslate"><span class="pre">tfidf_docs.csv</span></code>. Urutan baris
+pada <code class="docutils literal notranslate"><span class="pre">X</span></code> dan <code class="docutils literal notranslate"><span class="pre">y</span></code> harus konsisten – keduanya memang berasal dari proses
+yang sama sehingga urutannya sudah selaras.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">load_npz</span><span class="p">(</span><span class="s2">"tfidf_sparse.npz"</span><span class="p">)</span>
+<span class="n">feature_names</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"tfidf_features.txt"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"tfidf_docs.csv"</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">docs</span><span class="p">[</span><span class="s2">"label"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">"metrik"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"dokumen"</span><span class="p">,</span> <span class="s2">"fitur"</span><span class="p">,</span> <span class="s2">"kelas"</span><span class="p">],</span>
+    <span class="s2">"nilai"</span><span class="p">:</span> <span class="p">[</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">y</span><span class="p">)))],</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">X</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">load_npz</span><span class="p">(</span><span class="s2">"tfidf_sparse.npz"</span><span class="p">)</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named 'pandas'
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="split-data-latih-dan-uji">
+<h2>2. Split Data Latih dan Uji<a class="headerlink" href="#split-data-latih-dan-uji" title="Link to this heading">#</a></h2>
+<p>Data dibagi 80:20 – 80% untuk melatih model, 20% disisihkan sebagai data
+uji yang sama sekali tidak dilihat model selama pelatihan. Pembagian ini
+memakai <strong>stratifikasi</strong> pada kolom label (<code class="docutils literal notranslate"><span class="pre">stratify=y</span></code>), artinya proporsi
+sport dan finance dijaga tetap seimbang di kedua himpunan, bukan dibagi
+secara acak murni yang berisiko membuat satu himpunan didominasi satu
+kelas saja. <code class="docutils literal notranslate"><span class="pre">random_state=42</span></code> dipakai supaya hasil pembagian dapat
+direproduksi persis jika notebook dijalankan ulang.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">"himpunan"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"latih"</span><span class="p">,</span> <span class="s2">"uji"</span><span class="p">],</span>
+    <span class="s2">"jumlah"</span><span class="p">:</span> <span class="p">[</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X_test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+    <span class="s2">"sport"</span><span class="p">:</span> <span class="p">[(</span><span class="n">y_train</span> <span class="o">==</span> <span class="s2">"sport"</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="p">(</span><span class="n">y_test</span> <span class="o">==</span> <span class="s2">"sport"</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()],</span>
+    <span class="s2">"finance"</span><span class="p">:</span> <span class="p">[(</span><span class="n">y_train</span> <span class="o">==</span> <span class="s2">"finance"</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="p">(</span><span class="n">y_test</span> <span class="o">==</span> <span class="s2">"finance"</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()],</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>himpunan</th>
+      <th>jumlah</th>
+      <th>sport</th>
+      <th>finance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>latih</td>
+      <td>160</td>
+      <td>80</td>
+      <td>80</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>uji</td>
+      <td>40</td>
+      <td>20</td>
+      <td>20</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="model-1-naive-bayes-multinomial">
+<h2>3. Model 1: Naive Bayes (Multinomial)<a class="headerlink" href="#model-1-naive-bayes-multinomial" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">MultinomialNB</span></code> dari scikit-learn dipakai karena varian ini secara khusus
+memodelkan fitur berupa frekuensi kata (count atau TF-IDF), berbeda dengan
+<code class="docutils literal notranslate"><span class="pre">GaussianNB</span></code> yang mengasumsikan fitur berdistribusi normal kontinu.
+Parameter smoothing <code class="docutils literal notranslate"><span class="pre">alpha=1.0</span></code> (Laplace smoothing) dipakai sebagai
+default – ini mencegah probabilitas menjadi nol saat model bertemu kata
+yang tidak muncul sama sekali pada satu kelas selama pelatihan.</p>
+<p>Model dilatih pada <code class="docutils literal notranslate"><span class="pre">X_train</span></code>/<code class="docutils literal notranslate"><span class="pre">y_train</span></code>, lalu dipakai memprediksi label
+<code class="docutils literal notranslate"><span class="pre">X_test</span></code>. Hasilnya dievaluasi dengan:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">classification_report</span></code></strong> – menyajikan precision, recall, dan
+f1-score per kelas, sekaligus rata-rata makro (bobot sama untuk tiap
+kelas) dan tertimbang (weighted, mengikuti jumlah data tiap kelas).</p></li>
+<li><p><strong>Confusion matrix</strong> – tabel silang antara label aktual dan label hasil
+prediksi, memperlihatkan persis di mana model salah menebak (jika ada).</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.naive_bayes</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultinomialNB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">classification_report</span><span class="p">,</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">accuracy_score</span>
+
+<span class="n">nb</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span>
+<span class="n">nb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">pred_nb</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="n">report_nb</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">pred_nb</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="n">report_nb</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1-score</th>
+      <th>support</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>finance</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>20.0</td>
+    </tr>
+    <tr>
+      <th>sport</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>20.0</td>
+    </tr>
+    <tr>
+      <th>accuracy</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>macro avg</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>40.0</td>
+    </tr>
+    <tr>
+      <th>weighted avg</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>40.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">labels_order</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">pred_nb</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_order</span><span class="p">),</span>
+    <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">"aktual_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels_order</span><span class="p">],</span>
+    <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">"prediksi_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels_order</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>prediksi_finance</th>
+      <th>prediksi_sport</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>aktual_finance</th>
+      <td>20</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>aktual_sport</th>
+      <td>0</td>
+      <td>20</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p><strong>Cara membaca confusion matrix di atas:</strong> baris menunjukkan label
+sebenarnya, kolom menunjukkan label yang ditebak model. Angka pada
+diagonal (<code class="docutils literal notranslate"><span class="pre">aktual_finance</span></code>-<code class="docutils literal notranslate"><span class="pre">prediksi_finance</span></code> dan <code class="docutils literal notranslate"><span class="pre">aktual_sport</span></code>-<code class="docutils literal notranslate"><span class="pre">prediksi_sport</span></code>)
+adalah prediksi yang benar; angka di luar diagonal adalah kesalahan –
+misalnya nilai pada <code class="docutils literal notranslate"><span class="pre">aktual_sport</span></code>-<code class="docutils literal notranslate"><span class="pre">prediksi_finance</span></code> berarti dokumen
+sport yang keliru ditebak sebagai finance.</p>
+</section>
+<section id="model-2-k-nearest-neighbors-knn">
+<h2>4. Model 2: K-Nearest Neighbors (KNN)<a class="headerlink" href="#model-2-k-nearest-neighbors-knn" title="Link to this heading">#</a></h2>
+<p>KNN tidak “belajar” pola secara eksplisit seperti Naive Bayes – ia
+menyimpan seluruh data latih, dan saat memprediksi dokumen baru, ia
+mencari k dokumen latih paling mirip lalu mengambil label mayoritas di
+antara mereka.</p>
+<p>Dua keputusan desain penting untuk kasus ini:</p>
+<ol class="arabic simple">
+<li><p><strong>Metrik jarak <code class="docutils literal notranslate"><span class="pre">cosine</span></code>, bukan <code class="docutils literal notranslate"><span class="pre">euclidean</span></code>.</strong> Vektor TF-IDF berdimensi
+sangat tinggi (4.970 fitur) dan sangat <em>sparse</em> (mayoritas nol).
+Jarak euclidean pada ruang seperti ini mudah bias oleh panjang dokumen,
+sedangkan cosine similarity mengukur kemiripan arah/proporsi kata,
+sehingga lebih umum dipakai untuk data teks.</p></li>
+<li><p><strong>Pemilihan k lewat pemindaian (scan), bukan ditebak sekali.</strong> Nilai k
+yang terlalu kecil membuat model sensitif terhadap noise (overfitting
+ke tetangga terdekat), sedangkan k terlalu besar membuat batas antar
+kelas menjadi kabur (underfitting). Beberapa nilai k dicoba (3, 5, 7,
+9 – semuanya ganjil agar tidak ada suara seri pada klasifikasi biner)
+dan performanya dibandingkan pada data uji.</p></li>
+</ol>
+<p>Catatan: karena ukuran data hanya 200 dokumen, pemilihan k di sini memakai
+evaluasi langsung pada data uji sebagai perbandingan awal, bukan
+cross-validation berlapis yang idealnya dipakai pada dataset lebih besar.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.neighbors</span><span class="w"> </span><span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">f1_score</span>
+
+<span class="n">knn_scan</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">{</span>
+        <span class="s2">"k"</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span>
+        <span class="s2">"akurasi"</span><span class="p">:</span> <span class="n">accuracy_score</span><span class="p">(</span>
+            <span class="n">y_test</span><span class="p">,</span>
+            <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">"cosine"</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="s2">"f1_macro"</span><span class="p">:</span> <span class="n">f1_score</span><span class="p">(</span>
+            <span class="n">y_test</span><span class="p">,</span>
+            <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">"cosine"</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">),</span>
+            <span class="n">average</span><span class="o">=</span><span class="s2">"macro"</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+<span class="p">])</span>
+<span class="n">knn_scan</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>k</th>
+      <th>akurasi</th>
+      <th>f1_macro</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3</td>
+      <td>0.975</td>
+      <td>0.974984</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>5</td>
+      <td>0.975</td>
+      <td>0.974984</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>7</td>
+      <td>0.975</td>
+      <td>0.974984</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>9</td>
+      <td>0.975</td>
+      <td>0.974984</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Nilai k dengan f1-score makro tertinggi pada tabel di atas dipilih
+sebagai konfigurasi final. Jika beberapa k menghasilkan skor yang sama
+persis, k terkecil dipilih (mengikuti urutan tabel) karena model lebih
+sederhana dan lebih murah secara komputasi saat dipakai memprediksi data
+baru nantinya.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">knn_scan</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">knn_scan</span><span class="p">[</span><span class="s2">"f1_macro"</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(),</span> <span class="s2">"k"</span><span class="p">])</span>
+
+<span class="n">knn</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="n">best_k</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">"cosine"</span><span class="p">)</span>
+<span class="n">knn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">pred_knn</span> <span class="o">=</span> <span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="n">report_knn</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">pred_knn</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="n">report_knn</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1-score</th>
+      <th>support</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>finance</th>
+      <td>0.952381</td>
+      <td>1.000</td>
+      <td>0.975610</td>
+      <td>20.000</td>
+    </tr>
+    <tr>
+      <th>sport</th>
+      <td>1.000000</td>
+      <td>0.950</td>
+      <td>0.974359</td>
+      <td>20.000</td>
+    </tr>
+    <tr>
+      <th>accuracy</th>
+      <td>0.975000</td>
+      <td>0.975</td>
+      <td>0.975000</td>
+      <td>0.975</td>
+    </tr>
+    <tr>
+      <th>macro avg</th>
+      <td>0.976190</td>
+      <td>0.975</td>
+      <td>0.974984</td>
+      <td>40.000</td>
+    </tr>
+    <tr>
+      <th>weighted avg</th>
+      <td>0.976190</td>
+      <td>0.975</td>
+      <td>0.974984</td>
+      <td>40.000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">pred_knn</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_order</span><span class="p">),</span>
+    <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">"aktual_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels_order</span><span class="p">],</span>
+    <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">"prediksi_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels_order</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>prediksi_finance</th>
+      <th>prediksi_sport</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>aktual_finance</th>
+      <td>20</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>aktual_sport</th>
+      <td>1</td>
+      <td>19</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="perbandingan-model">
+<h2>5. Perbandingan Model<a class="headerlink" href="#perbandingan-model" title="Link to this heading">#</a></h2>
+<p>Kedua model sudah dievaluasi pada himpunan uji yang <strong>identik</strong>, sehingga
+angka pada tabel berikut bisa dibandingkan langsung secara adil. Empat
+metrik dipakai:</p>
+<ul class="simple">
+<li><p><strong>Akurasi</strong> - proporsi seluruh prediksi yang benar dari total data uji.
+Metrik ini cukup diandalkan di sini karena kelas seimbang (20 sport,
+20 finance pada data uji).</p></li>
+<li><p><strong>Presisi makro</strong> - dari semua dokumen yang ditebak masuk suatu kelas,
+berapa persen yang benar-benar kelas itu; dirata-rata sama bobot untuk
+kedua kelas.</p></li>
+<li><p><strong>Recall makro</strong> - dari semua dokumen yang sebenarnya milik suatu
+kelas, berapa persen yang berhasil ditebak benar; juga dirata-rata sama
+bobot.</p></li>
+<li><p><strong>F1-score makro</strong> - rata-rata harmonik presisi dan recall, dipakai
+sebagai kriteria utama pemilihan model karena mempertimbangkan kedua
+sisi kesalahan (false positive maupun false negative) sekaligus.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">"model"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Naive Bayes"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"KNN (k=</span><span class="si">{</span><span class="n">best_k</span><span class="si">}</span><span class="s2">)"</span><span class="p">],</span>
+    <span class="s2">"akurasi"</span><span class="p">:</span> <span class="p">[</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">pred_nb</span><span class="p">),</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">pred_knn</span><span class="p">)],</span>
+    <span class="s2">"presisi_macro"</span><span class="p">:</span> <span class="p">[</span><span class="n">report_nb</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"macro avg"</span><span class="p">,</span> <span class="s2">"precision"</span><span class="p">],</span> <span class="n">report_knn</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"macro avg"</span><span class="p">,</span> <span class="s2">"precision"</span><span class="p">]],</span>
+    <span class="s2">"recall_macro"</span><span class="p">:</span> <span class="p">[</span><span class="n">report_nb</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"macro avg"</span><span class="p">,</span> <span class="s2">"recall"</span><span class="p">],</span> <span class="n">report_knn</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"macro avg"</span><span class="p">,</span> <span class="s2">"recall"</span><span class="p">]],</span>
+    <span class="s2">"f1_macro"</span><span class="p">:</span> <span class="p">[</span><span class="n">report_nb</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"macro avg"</span><span class="p">,</span> <span class="s2">"f1-score"</span><span class="p">],</span> <span class="n">report_knn</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"macro avg"</span><span class="p">,</span> <span class="s2">"f1-score"</span><span class="p">]],</span>
+<span class="p">})</span>
+<span class="n">comparison</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>model</th>
+      <th>akurasi</th>
+      <th>presisi_macro</th>
+      <th>recall_macro</th>
+      <th>f1_macro</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Naive Bayes</td>
+      <td>1.000</td>
+      <td>1.00000</td>
+      <td>1.000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>KNN (k=3)</td>
+      <td>0.975</td>
+      <td>0.97619</td>
+      <td>0.975</td>
+      <td>0.974984</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="kesimpulan">
+<h2>6. Kesimpulan<a class="headerlink" href="#kesimpulan" title="Link to this heading">#</a></h2>
+<p>Sel berikut menyusun kesimpulan secara otomatis berdasarkan angka pada
+tabel perbandingan di atas – model dengan f1-score makro tertinggi
+dipilih sebagai model akhir. Pendekatan ini dipakai (bukan menuliskan nama
+model secara manual) supaya kesimpulan selalu konsisten dengan angka hasil
+run, termasuk jika data atau parameter di sel-sel sebelumnya diubah di
+kemudian hari.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">Markdown</span><span class="p">,</span> <span class="n">display</span>
+
+<span class="n">best_idx</span> <span class="o">=</span> <span class="n">comparison</span><span class="p">[</span><span class="s2">"f1_macro"</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()</span>
+<span class="n">best_model</span> <span class="o">=</span> <span class="n">comparison</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">best_idx</span><span class="p">,</span> <span class="s2">"model"</span><span class="p">]</span>
+<span class="n">best_acc</span> <span class="o">=</span> <span class="n">comparison</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">best_idx</span><span class="p">,</span> <span class="s2">"akurasi"</span><span class="p">]</span>
+<span class="n">best_f1</span> <span class="o">=</span> <span class="n">comparison</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">best_idx</span><span class="p">,</span> <span class="s2">"f1_macro"</span><span class="p">]</span>
+
+<span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""### Model terpilih: </span><span class="si">{</span><span class="n">best_model</span><span class="si">}</span>
+
+<span class="s2">Pada data uji (20% dari 200 dokumen, seimbang antara sport dan finance),</span>
+<span class="s2">model **</span><span class="si">{</span><span class="n">best_model</span><span class="si">}</span><span class="s2">** memberikan hasil terbaik dengan akurasi</span>
+<span class="si">{</span><span class="n">best_acc</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2"> dan f1-score makro </span><span class="si">{</span><span class="n">best_f1</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">, mengungguli model</span>
+<span class="s2">pembanding pada tabel perbandingan di atas. Model ini yang dipilih untuk</span>
+<span class="s2">tahap klasifikasi kategori berita selanjutnya.</span>
+
+<span class="s2">Perlu dicatat, skor setinggi ini wajar untuk dataset kecil (200 dokumen)</span>
+<span class="s2">dengan dua topik yang kosakatanya cukup berbeda (istilah olahraga vs</span>
+<span class="s2">istilah keuangan jarang tumpang tindih). Performa pada data baru di luar</span>
+<span class="s2">korpus ini -- terutama artikel yang membahas kedua topik sekaligus, misal</span>
+<span class="s2">berita bisnis klub sepak bola -- perlu diuji ulang sebelum model dipakai</span>
+<span class="s2">secara produksi."""</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<h3 class="rubric" id="model-terpilih-naive-bayes">Model terpilih: Naive Bayes</h3>
+<p>Pada data uji (20% dari 200 dokumen, seimbang antara sport dan finance),
+model <strong>Naive Bayes</strong> memberikan hasil terbaik dengan akurasi
+100.00% dan f1-score makro 100.00%, mengungguli model
+pembanding pada tabel perbandingan di atas. Model ini yang dipilih untuk
+tahap klasifikasi kategori berita selanjutnya.</p>
+<p>Perlu dicatat, skor setinggi ini wajar untuk dataset kecil (200 dokumen)
+dengan dua topik yang kosakatanya cukup berbeda (istilah olahraga vs
+istilah keuangan jarang tumpang tindih). Performa pada data baru di luar
+korpus ini – terutama artikel yang membahas kedua topik sekaligus, misal
+berita bisnis klub sepak bola – perlu diuji ulang sebelum model dipakai
+secara produksi.</p>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mengapa-dua-algoritma-ini">Mengapa dua algoritma ini?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memuat-data-hasil-preprocessing">1. Memuat Data Hasil Preprocessing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#split-data-latih-dan-uji">2. Split Data Latih dan Uji</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-1-naive-bayes-multinomial">3. Model 1: Naive Bayes (Multinomial)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-2-k-nearest-neighbors-knn">4. Model 2: K-Nearest Neighbors (KNN)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perbandingan-model">5. Perbandingan Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kesimpulan">6. Kesimpulan</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Muhammad Zulfri Choiril Anwar
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
