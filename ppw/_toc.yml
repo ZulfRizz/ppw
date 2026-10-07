@@ -4,6 +4,7 @@
 format: jb-book
 root: intro
 chapters:
-- file: tugas_1.ipynb
-- file: text-preprocessing.ipynb
-- file: skip-gram.ipynb
+    - file: tugas_1.ipynb
+    - file: text-preprocessing.ipynb
+    - file: skip-gram.ipynb
+    - file: klasifikasi_tf-idf_vs_skipgram.ipynb
