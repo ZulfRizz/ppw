@@ -1,0 +1,47 @@
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/nbclient/client.py", line 1323, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+import langid
+
+sentences, article_ids = [], []
+for _, row in df.iterrows():
+    parts = [p.strip()
+             for p in re.split(r"(?<=[.!?])\s+|\n+", row["isi_berita"])
+             if p.strip()]
+    sentences.extend(parts)
+    article_ids.extend([row["id"]] * len(parts))
+
+lang_labels = [langid.classify(s)[0] for s in sentences]
+lang_counts = Counter(lang_labels)
+
+(pd.DataFrame({"bahasa": list(lang_counts),
+               "kalimat": list(lang_counts.values()),
+               "proporsi": [f"{100 * k / len(sentences):.1f}%"
+                            for k in lang_counts.values()]})
+    .sort_values("kalimat", ascending=False))
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+Cell [0;32mIn[20], line 1[0m
+[0;32m----> 1[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mlangid[39;00m
+[1;32m      3[0m sentences, article_ids [38;5;241m=[39m [], []
+[1;32m      4[0m [38;5;28;01mfor[39;00m _, row [38;5;129;01min[39;00m df[38;5;241m.[39miterrows():
+
+[0;31mModuleNotFoundError[0m: No module named 'langid'
+
